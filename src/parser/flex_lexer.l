@@ -269,7 +269,7 @@ CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
   return SQL_IDENTIFIER;
 }
 
-[A-Za-z][A-Za-z0-9_]* {
+[A-Za-z_][A-Za-z0-9_]* {
   yylval->sval = strdup(yytext);
   return SQL_IDENTIFIER;
 }
