@@ -24,6 +24,7 @@ enum ExprType {
   kExprStar,
   kExprParameter,
   kExprColumnRef,
+  kExprDocumentPathRef,
   kExprFunctionRef,
   kExprOperator,
   kExprSelect,
@@ -31,7 +32,7 @@ enum ExprType {
   kExprArray,
   kExprArrayIndex,
   kExprExtract,
-  kExprCast
+  kExprCast,
 };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -117,6 +118,12 @@ struct WindowDescription {
   FrameDescription* frameDescription;
 };
 
+enum PathSeparator {
+  Root,
+  SubField,
+  ArrayTraverse
+};
+
 // Represents SQL expressions (i.e. literals, operators, column_refs).
 // TODO: When destructing a placeholder expression, we might need to alter the
 // placeholder_list.
@@ -193,6 +200,10 @@ struct Expr {
   static Expr* makeColumnRef(char* name);
 
   static Expr* makeColumnRef(char* table, char* name);
+
+  static Expr* makeSlashColumnRef(std::vector<std::pair<char*,PathSeparator>>* path);
+
+  static Expr* makeSlashColumnRef(char* table, std::vector<std::pair<char*,PathSeparator>>* path);
 
   static Expr* makeStar(void);
 

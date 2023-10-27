@@ -255,14 +255,16 @@ extern int hsql_debug;
     SQL_FOLLOWING = 423,           /* FOLLOWING  */
     SQL_PRECEDING = 424,           /* PRECEDING  */
     SQL_CURRENT_ROW = 425,         /* CURRENT_ROW  */
-    SQL_EQUALS = 426,              /* EQUALS  */
-    SQL_NOTEQUALS = 427,           /* NOTEQUALS  */
-    SQL_LESS = 428,                /* LESS  */
-    SQL_GREATER = 429,             /* GREATER  */
-    SQL_LESSEQ = 430,              /* LESSEQ  */
-    SQL_GREATEREQ = 431,           /* GREATEREQ  */
-    SQL_NOTNULL = 432,             /* NOTNULL  */
-    SQL_UMINUS = 433               /* UMINUS  */
+    SQL_PATHSEP_SUBFIELD = 426,    /* PATHSEP_SUBFIELD  */
+    SQL_PATHSEP_TRAVERSE = 427,    /* PATHSEP_TRAVERSE  */
+    SQL_EQUALS = 428,              /* EQUALS  */
+    SQL_NOTEQUALS = 429,           /* NOTEQUALS  */
+    SQL_LESS = 430,                /* LESS  */
+    SQL_GREATER = 431,             /* GREATER  */
+    SQL_LESSEQ = 432,              /* LESSEQ  */
+    SQL_GREATEREQ = 433,           /* GREATEREQ  */
+    SQL_NOTNULL = 434,             /* NOTNULL  */
+    SQL_UMINUS = 435               /* UMINUS  */
   };
   typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -324,6 +326,7 @@ union HSQL_STYPE
   hsql::WithDescription* with_description_t;
 
   std::vector<char*>* str_vec;
+  std::vector<std::pair<char*,hsql::PathSeparator>>* path_vec;
   std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
@@ -339,7 +342,7 @@ union HSQL_STYPE
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
-#line 343 "bison_parser.h"
+#line 346 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

@@ -228,6 +228,8 @@ CURRENT[ \t\n]+ROW       TOKEN(CURRENT_ROW)
 CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
 
             /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
+">>"        TOKEN(PATHSEP_TRAVERSE)
+"=>"        TOKEN(PATHSEP_SUBFIELD)
 "=="        TOKEN(EQUALS)
 "!="        TOKEN(NOTEQUALS)
 "<>"        TOKEN(NOTEQUALS)

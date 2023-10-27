@@ -196,6 +196,24 @@ Expr* Expr::makeColumnRef(char* table, char* name) {
   return e;
 }
 
+Expr* Expr::makeSlashColumnRef(std::vector<std::pair<char*,PathSeparator>>* path) {
+  Expr* e = new Expr(kExprDocumentPathRef);
+  e->exprList = new std::vector<Expr*>();
+  for (auto [name,sep] : *path) {
+    e->exprList->push_back(new Expr(kExprColumnRef));
+    e->exprList->back()->name = name;
+    e->exprList->back()->ival = sep;
+  }
+  delete path;
+  return e;
+}
+
+Expr* Expr::makeSlashColumnRef(char* table, std::vector<std::pair<char*,PathSeparator>>* path) {
+  Expr* e = makeSlashColumnRef(path);
+  e->table = table;
+  return e;
+}
+
 Expr* Expr::makeStar(void) {
   Expr* e = new Expr(kExprStar);
   return e;

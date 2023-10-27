@@ -145,6 +145,7 @@
   hsql::WithDescription* with_description_t;
 
   std::vector<char*>* str_vec;
+  std::vector<std::pair<char*,hsql::PathSeparator>>* path_vec;
   std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
@@ -280,6 +281,7 @@
     // ImportType is used for compatibility reasons
     %type <import_type_t>          opt_file_type file_type
 
+    %type <path_vec>               ident_slashlist
     %type <str_vec>                ident_commalist opt_column_list
     %type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints opt_partition
     %type <table_vec>              table_ref_commalist
@@ -289,6 +291,8 @@
     %type <table_element_vec>      table_elem_commalist
     %type <locking_clause_vec>     opt_locking_clause_list opt_locking_clause
 
+    %type <ival>                   pathsep
+
     /******************************
      ** Token Precedence and Associativity
      ** Precedence: lowest to highest
@@ -296,6 +300,8 @@
     %left     OR
     %left     AND
     %right    NOT
+    %left PATHSEP_SUBFIELD
+    %left PATHSEP_TRAVERSE
     %nonassoc '=' EQUALS NOTEQUALS LIKE ILIKE
     %nonassoc '<' '>' LESS GREATER LESSEQ GREATEREQ
 
@@ -1045,8 +1051,8 @@ array_index : operand '[' int_literal ']' { $$ = Expr::makeArrayIndex($1, $3->iv
 
 between_expr : operand BETWEEN operand AND operand { $$ = Expr::makeBetween($1, $3, $5); };
 
-column_name : IDENTIFIER { $$ = Expr::makeColumnRef($1); }
-| IDENTIFIER '.' IDENTIFIER { $$ = Expr::makeColumnRef($1, $3); }
+column_name : ident_slashlist { $$ = Expr::makeSlashColumnRef($1); }
+| IDENTIFIER '.' ident_slashlist { $$ = Expr::makeSlashColumnRef($1, $3); }
 | '*' { $$ = Expr::makeStar(); }
 | IDENTIFIER '.' '*' { $$ = Expr::makeStar($1); };
 
@@ -1321,6 +1327,22 @@ ident_commalist : IDENTIFIER {
 }
 | ident_commalist ',' IDENTIFIER {
   $1->push_back($3);
+  $$ = $1;
+};
+
+pathsep: PATHSEP_SUBFIELD {
+  $$ = PathSeparator::SubField;
+}
+| PATHSEP_TRAVERSE {
+  $$ = PathSeparator::ArrayTraverse;
+}
+
+ident_slashlist : IDENTIFIER {
+  $$ = new std::vector<std::pair<char*,PathSeparator>>();
+  $$->emplace_back($1, PathSeparator::Root);
+}
+| ident_slashlist pathsep IDENTIFIER {
+  $1->emplace_back($3, static_cast<hsql::PathSeparator>($2));
   $$ = $1;
 };
 
